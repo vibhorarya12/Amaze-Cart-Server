@@ -1,5 +1,6 @@
-const { Products } = require("../models");
-
+const { Products , User} = require("../models");
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET;
 const getAllProducts = async (req, res) => {
   try {
     const products = await Products.find({});
@@ -30,6 +31,48 @@ const getProductsByCategoryName = async (req, res) => {
   }
 };
 
+
+
+const addToWishlist = async (req, res , next) => {
+  const {  productId } = req.body;
+
+  try {
+    // Find user by ID
+    console.log( "user data is  <<<<<<<", req.userData)
+    const user = await User.findById(req.userData.id);
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    // Find product by ID
+    const product = await Products.findById(productId);
+    if (!product) {
+      return res.status(404).send({ message: "Product not found" });
+    }
+
+    // Add product to user's wishlist if not already present
+    if (!user.wishList.includes(productId)) {
+      user.wishList.push(productId);
+      await user.save();
+    } else {
+      return res.status(400).send({ message: "Product already in wishlist" });
+    }
+
+    // Send response with added product details
+    res.status(200).send({
+      message: 'Product added to wishlist successfully',
+      product,
+    });
+  } catch (error) {
+    console.error("Error adding product to wishlist:", error.message);
+    res.status(500).send({ message: "Internal server error" });
+  }
+};
+;
+
+
+
+
 const testingController = async (req, res) => {
   try {
     res.status(201).json({ message: "this is testimg controller" });
@@ -38,9 +81,14 @@ const testingController = async (req, res) => {
   }
 };
 
+
+
+
+
 module.exports = {
   getAllProducts,
   addProduct,
   testingController,
   getProductsByCategoryName,
+  addToWishlist
 };
