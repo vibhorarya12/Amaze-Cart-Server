@@ -90,6 +90,29 @@ const getWishListProducts = async (req, res, next) => {
 
 
 
+const removeFromWishList = async (req, res, next) => {
+  const { productId } = req.body;
+  try {
+    const user = await User.findById(req.userData.id);
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    const productIndex = user.wishList.indexOf(productId);
+    if (productIndex === -1) {
+      return res.status(404).send({ message: "Product not in wishlist" });
+    }
+
+    user.wishList.splice(productIndex, 1);
+    await user.save();
+
+    res.status(200).send({ message: "Product removed from wishlist successfully" });
+  } catch (error) {
+    console.error("Error removing product from wishlist:", error.message);
+    res.status(500).send({ message: "Internal server error" });
+  }
+};
+
 
 const testingController = async (req, res) => {
   try {
@@ -109,5 +132,6 @@ module.exports = {
   testingController,
   getProductsByCategoryName,
   addToWishlist,
-  getWishListProducts
+  getWishListProducts,
+  removeFromWishList
 };
