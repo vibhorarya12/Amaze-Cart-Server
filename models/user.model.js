@@ -5,6 +5,7 @@ const userSchema = new Schema({
   name: { type: String, required: true },
   phone: { type: String, required: true },
   address: { type: String },
+  email : {type:String},
   wishList: [{ type: Schema.Types.ObjectId, ref: 'Products' }],
   orders: [{ type: Schema.Types.ObjectId, ref: 'Orders' }]
 }, { collection: 'User' });

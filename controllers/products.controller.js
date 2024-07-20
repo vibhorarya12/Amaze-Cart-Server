@@ -21,6 +21,7 @@ const addProduct = async (req, res) => {
   }
 };
 
+
 const getProductsByCategoryName = async (req, res) => {
   const categoryName = req.params.categoryName;
   try {
@@ -71,6 +72,23 @@ const addToWishlist = async (req, res , next) => {
 ;
 
 
+const getWishListProducts = async (req, res, next) => {
+  try {
+    // Find user by ID
+    const user = await User.findById(req.userData.id).populate('wishList');
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    // Send response with the wishlist products
+    res.status(200).json(user.wishList);
+  } catch (error) {
+    console.error("Error fetching wishlist products:", error.message);
+    res.status(500).send({ message: "Internal server error" });
+  }
+};
+
+
 
 
 const testingController = async (req, res) => {
@@ -90,5 +108,6 @@ module.exports = {
   addProduct,
   testingController,
   getProductsByCategoryName,
-  addToWishlist
+  addToWishlist,
+  getWishListProducts
 };

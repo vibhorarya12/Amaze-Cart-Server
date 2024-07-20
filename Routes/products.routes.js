@@ -7,5 +7,6 @@ router.post('/addProduct', productsController.addProduct );
 router.post('/testing', productsController.testingController );
 router.get('/category/:categoryName', productsController.getProductsByCategoryName);
 router.post('/addtoWhishlist',auth, productsController.addToWishlist);
+router.post('/getWishListProducts', auth,productsController.getWishListProducts);
 
 module.exports = router

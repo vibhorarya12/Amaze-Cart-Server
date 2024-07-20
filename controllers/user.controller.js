@@ -8,10 +8,10 @@ const checkExisting = async (req, res) => {
   try {
     let user = await User.findOne({ phone: req.body.phone });
     if (user === null) {
-      return res.status(200).send({ message: "User not found" });
+      return res.status(400).send({ message: "User not found register first" });
     } else {
       return res
-        .status(400)
+        .status(200)
         .send({ message: "The phone number already exists" });
     }
   } catch (error) {
@@ -94,4 +94,8 @@ const loginUser = async (req, res) => {
   };
 
 
+
+
+
+  
 module.exports = { checkExisting , registerUser, loginUser};
