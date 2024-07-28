@@ -1,9 +1,10 @@
 const { Order, Products, User } = require("../models");
+const { instance } = require("../Razorpay/razorpayConfig");
 
 const createOrder = async (req, res, next) => {
     try {
         // Extract order details from request body
-        const  userId = req.userData.id;
+        const userId = req.userData.id;
         const { name, phone, address, paymentMode, amount, products } = req.body;
 
         // Validate required fields
@@ -19,6 +20,19 @@ const createOrder = async (req, res, next) => {
             }
         }
 
+        let paymentId = '';
+        let paymentStatus = 'Pending';
+
+        // Create Razorpay order if payment mode is not COD
+        if (paymentMode !== 'Cash on delivery') {
+            const options = {
+                amount: amount * 100,  // amount in the smallest currency unit
+                currency: "INR",
+            };
+            const order = await instance.orders.create(options);
+            paymentId = order.id;
+        } 
+        
         // Create new order
         const newOrder = new Order({
             userId,
@@ -28,6 +42,10 @@ const createOrder = async (req, res, next) => {
             paymentMode,
             amount,
             products,
+            paymentData: {
+                paymentStatus,
+                paymentId,
+            }
         });
 
         // Save order to database
@@ -42,5 +60,4 @@ const createOrder = async (req, res, next) => {
         return res.status(500).send({ message: "Internal server error" });
     }
 };
-
 module.exports = { createOrder };

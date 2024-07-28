@@ -45,6 +45,22 @@ const OrderSchema = new Schema({
       },
     },
   ],
+
+  paymentData: {
+    paymentStatus: {
+      type: String,
+      enum: ['Pending', 'Completed', 'Failed'],
+      default: 'Pending',
+      required: true,
+    },
+    paymentId: {
+      type: String,
+      default: '',
+    
+      
+    },
+  },
+
   createdAt: {
     type: Date,
     default: Date.now,
