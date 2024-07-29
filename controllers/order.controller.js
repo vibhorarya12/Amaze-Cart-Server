@@ -1,11 +1,13 @@
 const { Order, Products, User } = require("../models");
 const { instance } = require("../Razorpay/razorpayConfig");
 
+
+// controller to create an order 
 const createOrder = async (req, res, next) => {
     try {
         // Extract order details from request body
         const userId = req.userData.id;
-        const { name, phone, address, paymentMode, amount, products } = req.body;
+        const { name, phone,email, address, paymentMode, amount, products } = req.body;
 
         // Validate required fields
         if (!name || !phone || !address || !paymentMode || !amount || !products) {
@@ -38,6 +40,7 @@ const createOrder = async (req, res, next) => {
             userId,
             name,
             phone,
+            email,
             address,
             paymentMode,
             amount,
@@ -60,4 +63,39 @@ const createOrder = async (req, res, next) => {
         return res.status(500).send({ message: "Internal server error" });
     }
 };
-module.exports = { createOrder };
+
+
+
+// controller to confirm payment done via razorpay
+const confirmPayment = async (req, res, next) => {
+    const { orderId  , paymentStatus} = req.body;
+    const { id: userId } = req.userData;
+    try {
+        // Find the order by ID
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).send({ message: 'Order ID not found!' });
+        }
+
+        // Check if the order belongs to the logged-in user
+        if (order.userId.toString() !== userId) {
+            return res.status(403).send({ message: 'Unauthorized access!' });
+        }
+
+        // Update the payment data
+        order.paymentData.paymentStatus = paymentStatus;
+       
+
+        // Save the updated order
+        await order.save();
+
+        // Send success response
+        return res.status(200).send({ message: 'Payment confirmed successfully', order });
+    } catch (error) {
+        // Handle errors
+        console.error(error);
+        return res.status(500).send({ message: 'Internal server error' });
+    }
+};
+
+module.exports = { createOrder , confirmPayment};
