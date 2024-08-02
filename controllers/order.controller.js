@@ -98,4 +98,22 @@ const confirmPayment = async (req, res, next) => {
     }
 };
 
-module.exports = { createOrder , confirmPayment};
+
+const getOrdersByUser = async (req, res, next) => {
+    const { id: userId } = req.userData;
+    try {
+        // Find all orders by userId and populate the products field
+        const orders = await Order.find({ userId }).populate('products.productId');
+        if (!orders || orders.length === 0) {
+            return res.status(404).send({ message: 'No orders found for this user!' });
+        }
+
+        // Send success response with the orders
+        return res.status(200).send({ message: 'Orders retrieved successfully', orders });
+    } catch (error) {
+        // Handle errors
+        console.error(error);
+        return res.status(500).send({ message: 'Internal server error' });
+    }
+};
+module.exports = { createOrder , confirmPayment , getOrdersByUser};
