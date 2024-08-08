@@ -7,7 +7,7 @@ const userSchema = new Schema({
   address: { type: String },
   email : {type:String},
   wishList: [{ type: Schema.Types.ObjectId, ref: 'Products' }],
-  orders: [{ type: Schema.Types.ObjectId, ref: 'Orders' }]
+  
 }, { collection: 'User' });
 
 const User = mongoose.model('User', userSchema);
