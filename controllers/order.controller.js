@@ -105,7 +105,7 @@ const getOrdersByUser = async (req, res, next) => {
         // Find all orders by userId and populate the products field
         const orders = await Order.find({ userId }).populate('products.productId');
         if (!orders || orders.length === 0) {
-            return res.status(404).send({ message: 'No orders found for this user!' });
+            return res.status(200).send({ message: 'No orders found for this user!', orders: [] });
         }
 
         // Send success response with the orders
