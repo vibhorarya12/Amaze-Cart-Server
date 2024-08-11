@@ -1,8 +1,6 @@
 const { Products, User } = require("../models");
-const jwt = require("jsonwebtoken");
-const JWT_SECRET = process.env.JWT_SECRET;
-const axios = require("axios");
-const cheerio = require("cheerio");
+
+
 const getAllProducts = async (req, res) => {
   try {
     const products = await Products.find({});
@@ -110,68 +108,17 @@ const removeFromWishList = async (req, res, next) => {
 };
 
 
+
+
+
+
 const testingController = async (req, res) => {
-  const { url, category } = req.body;
-
-  try {
-    const response = await axios.get(url, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-      },
-    });
-    const $ = cheerio.load(response.data);
-
-    // Extracting the product title
-    const productTitle = $("#productTitle").text().trim();
-
-    // Extracting the product price
-    const productPrice = $(".a-price-whole")
-      .first()
-      .text()
-      .trim()
-      .replace(/[^0-9.]/g, "");
-
-    // Extracting main image URLs
-    const mainImageUrls = [];
-    $("#imgTagWrapperId img").each((i, element) => {
-      const imgSrc = $(element).attr("src");
-      if (imgSrc) {
-        mainImageUrls.push(imgSrc);
-      }
-
-      const dataDynamicImage = $(element).attr("data-a-dynamic-image");
-      if (dataDynamicImage) {
-        const dynamicImageUrls = Object.keys(JSON.parse(dataDynamicImage));
-        mainImageUrls.push(...dynamicImageUrls);
-      }
-    });
-
-    // Extracting product description
-    const productDescription =
-      $("#productDescription p").text().trim() || productTitle;
-
-    const productData = {
-      title: productTitle,
-      price: parseFloat(productPrice), // Convert to number
-      description: productDescription,
-      images: mainImageUrls,
-      category: {
-        name: category,
-        image: mainImageUrls[0] || "",
-      },
-    };
-
-    const newProduct = new Products(productData);
-    await newProduct.save();
-
-    res.status(200).send({ message: "Product added successfully!" });
-  } catch (error) {
-    console.error("Error in testingController:", error);
-    res
-      .status(500)
-      .send({ message: "An error occurred while processing your request." });
-  }
+    try {
+       res.status(200).send({message: 'success'});
+      
+    } catch (error) {
+       res.status(500).send(error);
+    }
 };
 
 
