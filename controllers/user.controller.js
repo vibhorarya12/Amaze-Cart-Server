@@ -93,9 +93,38 @@ const loginUser = async (req, res) => {
     }
   };
 
+// update user address
+const updateAddress = async (req, res) => {
+  const { id: userId } = req.userData; // Assuming userData is set after verifying the JWT token
+  const { address } = req.body;
+
+  try {
+    // Find the user by ID
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    // Update the user's address
+    user.address = address;
+
+    // Save the updated user
+    await user.save();
+
+    // Send success response
+    res.status(200).send({
+      message: "Address updated successfully",
+      user,
+    });
+  } catch (error) {
+    console.error("Error updating address:", error.message);
+    res.status(500).send({ message: "Internal server error" });
+  }
+};
 
 
 
 
   
-module.exports = { checkExisting , registerUser, loginUser};
+module.exports = { checkExisting , registerUser, loginUser , updateAddress};
