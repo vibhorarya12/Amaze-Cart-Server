@@ -21,4 +21,7 @@
     "razorpay": "^2.9.4",
     "sneaks-api": "^1.2.3"
   }
+  "engines": {
+    "node": "24.x"
+  }
 }
